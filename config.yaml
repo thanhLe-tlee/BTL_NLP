@@ -1,0 +1,175 @@
+# BTL_NLP Modular Framework Configuration
+# =======================================
+
+# Project settings
+project:
+  name: "BTL_NLP"
+  version: "1.0.0"
+  description: "Modular framework for fine-tuning language models"
+
+# Model configurations
+models:
+  llama3_8b:
+    name: "unsloth/llama-3-8b-Instruct-bnb-4bit"
+    max_seq_length: 2048
+    load_in_4bit: true
+    lora:
+      r: 16
+      alpha: 16
+      dropout: 0.0
+      use_dora: true
+      target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  
+  llama3_1b:
+    name: "unsloth/Llama-3.1-1B-Instruct-bnb-4bit"
+    max_seq_length: 2048
+    load_in_4bit: true
+    lora:
+      r: 16
+      alpha: 16
+      dropout: 0.0
+      use_dora: false
+      target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  
+  phi4_mini:
+    name: "unsloth/phi-4-mini-bnb-4bit"
+    max_seq_length: 2048
+    load_in_4bit: true
+    lora:
+      r: 16
+      alpha: 16
+      dropout: 0.0
+      use_dora: false
+      target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+# Dataset configurations
+datasets:
+  cnn_dailymail:
+    name: "cnn_dailymail"
+    version: "3.0.0"
+    task_type: "summarization"
+    source_column: "article"
+    target_column: "highlights"
+    max_samples:
+      train: 10000
+      validation: 1000
+      test: 1000
+  
+  wmt14:
+    name: "wmt14"
+    subset: "de-en"
+    task_type: "translation"
+    max_samples:
+      train: 50000
+      validation: 2000
+      test: 2000
+  
+  sst2:
+    name: "glue"
+    subset: "sst2"
+    task_type: "classification"
+    text_column: "sentence"
+    label_column: "label"
+    max_samples:
+      train: 5000
+      validation: 500
+      test: 500
+
+# Training configurations
+training:
+  default:
+    output_dir: "./results"
+    num_train_epochs: 3
+    per_device_train_batch_size: 2
+    per_device_eval_batch_size: 2
+    gradient_accumulation_steps: 4
+    learning_rate: 2.0e-4
+    weight_decay: 0.01
+    lr_scheduler_type: "linear"
+    warmup_steps: 50
+    evaluation_strategy: "steps"
+    eval_steps: 50
+    save_strategy: "steps"
+    save_steps: 50
+    save_total_limit: 3
+    logging_strategy: "steps"
+    logging_steps: 10
+    fp16: false
+    bf16: true
+    dataloader_pin_memory: false
+    remove_unused_columns: false
+    max_grad_norm: 0.3
+    group_by_length: true
+    optim: "adamw_8bit"
+    seed: 3407
+  
+  memory_optimized:
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 8
+    fp16: true
+    bf16: false
+    dataloader_pin_memory: false
+  
+  colab:
+    per_device_train_batch_size: 2
+    gradient_accumulation_steps: 4
+    bf16: true
+    fp16: false
+    dataloader_pin_memory: false
+
+# Task-specific configurations
+tasks:
+  translation:
+    num_train_epochs: 3
+    learning_rate: 2.0e-4
+    warmup_steps: 100
+    lora_r: 32
+    lora_alpha: 32
+  
+  summarization:
+    num_train_epochs: 2
+    learning_rate: 1.0e-4
+    warmup_steps: 50
+    lora_r: 16
+    lora_alpha: 16
+  
+  classification:
+    num_train_epochs: 5
+    learning_rate: 3.0e-4
+    warmup_steps: 30
+    lora_r: 8
+    lora_alpha: 16
+
+# Evaluation configurations
+evaluation:
+  metrics:
+    summarization: ["rouge1", "rouge2", "rougeL", "rougeLsum"]
+    translation: ["bleu", "meteor", "chrf"]
+    classification: ["accuracy", "f1", "precision", "recall"]
+  
+  visualization:
+    plot_training_curves: true
+    plot_loss_curves: true
+    save_plots: true
+    plot_format: "png"
+
+# Environment settings
+environment:
+  seed: 3407
+  deterministic: true
+  cuda_visible_devices: null
+  mixed_precision: "bf16"
+  
+  logging:
+    level: "INFO"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    save_logs: true
+    log_dir: "./logs"
+
+# Paths
+paths:
+  data_dir: "./data"
+  models_dir: "./models" 
+  results_dir: "./results"
+  logs_dir: "./logs"
+  cache_dir: "./cache"
