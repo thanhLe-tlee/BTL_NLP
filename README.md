@@ -3,12 +3,8 @@
 
 
 ## Overview
-This repository implements experiments with LLaMA 3.1-8B, Phi-4, and LLaMA 3-8B, applying three fine-tuning techniques (LoRA, Adapter, Prompt Tuning) on three NLP tasks.
+This repository implements experiments with LLaMA 3.1-8B, Phi-4, and LLaMA 3-8B, applying two fine-tuning techniques (LoRA, QLoRA) on three NLP tasks.
 
-## Models
-- LLaMA 3.1-8B: Fine-tuned with LoRA.
-- Phi-4: 
-- LLaMA 3-8B: 
 
 ## Setup
 1. Clone: `git clone <repo_url>`
